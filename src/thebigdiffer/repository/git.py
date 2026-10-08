@@ -67,20 +67,29 @@ class GitRepositoryPreparer:
 
     def prepare(self) -> PreparedGitRepository:
         """Resolve refs and materialize both snapshots in a new private temporary root."""
+        repository_record = self._repository_record()
+        before_commit, before_tree, before_entries = self._resolve_snapshot(self.before_ref)
+        after_commit, after_tree, after_entries = self._resolve_snapshot(self.after_ref)
+        # Validate both committed path sets before creating or writing either snapshot.
         snapshot_root = Path(tempfile.mkdtemp(prefix="thebigdiffer-git-"))
-        os.chmod(snapshot_root, 0o700)
         before_directory = snapshot_root / "before"
         after_directory = snapshot_root / "after"
-        before_directory.mkdir(mode=0o700)
-        after_directory.mkdir(mode=0o700)
         try:
-            repository_record = self._repository_record()
-            before = self._resolve_and_materialize(
+            os.chmod(snapshot_root, 0o700)
+            before_directory.mkdir(mode=0o700)
+            after_directory.mkdir(mode=0o700)
+            before = self._materialize_snapshot(
                 supplied_ref=self.before_ref,
+                commit=before_commit,
+                tree=before_tree,
+                entries=before_entries,
                 snapshot_root=before_directory,
             )
-            after = self._resolve_and_materialize(
+            after = self._materialize_snapshot(
                 supplied_ref=self.after_ref,
+                commit=after_commit,
+                tree=after_tree,
+                entries=after_entries,
                 snapshot_root=after_directory,
             )
             metadata = {
@@ -158,15 +167,20 @@ class GitRepositoryPreparer:
             "local_only": True,
         }
 
-    def _resolve_and_materialize(
+    def _resolve_snapshot(self, supplied_ref: str) -> tuple[str, str, list[dict[str, str]]]:
+        commit = self._resolve_commit(supplied_ref)
+        tree = self._resolve_tree(commit)
+        return commit, tree, self._enumerate_tree(tree)
+
+    def _materialize_snapshot(
         self,
         *,
         supplied_ref: str,
+        commit: str,
+        tree: str,
+        entries: list[dict[str, str]],
         snapshot_root: Path,
     ) -> dict[str, Any]:
-        commit = self._resolve_commit(supplied_ref)
-        tree = self._resolve_tree(commit)
-        entries = self._enumerate_tree(tree)
         records = self._materialize_entries(entries, snapshot_root)
         counts = {
             "file_count": len(records),
@@ -540,13 +554,17 @@ def _validate_entry_paths(entries: list[dict[str, str]]) -> None:
         if path in exact:
             raise GitPreparationError(f"duplicate Git tree path: {path!r}")
         exact.add(path)
-        key = unicodedata.normalize("NFC", path).casefold()
-        previous = portable.get(key)
-        if previous is not None and previous != path:
-            raise GitPreparationError(
-                f"case or Unicode-normalization path collision: {previous!r} and {path!r}"
-            )
-        portable[key] = path
+        parts = path.split("/")
+        for index in range(1, len(parts) + 1):
+            prefix = "/".join(parts[:index])
+            key = unicodedata.normalize("NFC", prefix).casefold()
+            previous = portable.get(key)
+            if previous is not None and previous != prefix:
+                raise GitPreparationError(
+                    "case or Unicode-normalization path collision: "
+                    f"{previous!r} and {prefix!r}"
+                )
+            portable[key] = prefix
     for path in exact:
         parts = path.split("/")
         for index in range(1, len(parts)):
