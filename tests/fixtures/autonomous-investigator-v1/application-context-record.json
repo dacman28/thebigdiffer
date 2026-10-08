@@ -1,0 +1,13 @@
+{
+  "deployment_context_established": false,
+  "exact_text": "Repository type:\nPython package\n\nApplication context:\nThis repository implements a Python package.\n\nDeployment context:\nUnknown.\n",
+  "fields": {
+    "application_context": "This repository implements a Python package.",
+    "deployment_context": "Unknown.",
+    "provenance": "explicitly supplied by the user",
+    "repository_type": "Python package"
+  },
+  "provenance": "explicitly supplied by the user",
+  "sha256": "10a0668e70d74e2370619eea0f13a760df03b2bf9d866aca47460af3cde14945",
+  "supplied": true
+}

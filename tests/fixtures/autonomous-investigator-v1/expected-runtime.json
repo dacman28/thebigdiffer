@@ -1,0 +1,104 @@
+{
+  "estimated_cost": {
+    "cache_read_input_tokens": 0,
+    "cache_write_input_tokens": 0,
+    "calls": [
+      {
+        "cumulative_estimated_cost_usd": "0.008250",
+        "estimated_cost_usd": "0.008250",
+        "invocation": 1,
+        "usage": {
+          "inputTokens": 1000,
+          "outputTokens": 100
+        }
+      },
+      {
+        "cumulative_estimated_cost_usd": "0.026400",
+        "estimated_cost_usd": "0.018150",
+        "invocation": 2,
+        "usage": {
+          "inputTokens": 1800,
+          "outputTokens": 300
+        }
+      }
+    ],
+    "estimated_cost_usd": "0.026400",
+    "input_tokens": 2800,
+    "output_tokens": 400,
+    "pricing": {
+      "cache_read_tokens": "0.55",
+      "cache_write_1h_tokens": "11.00",
+      "cache_write_5m_tokens": "6.875",
+      "currency": "USD",
+      "effective_date": "2026-05-12",
+      "input_tokens": "5.50",
+      "model_id": "us.anthropic.claude-opus-4-6-v1",
+      "note": "Local estimates only. This ceiling is not an AWS billing limit and does not include taxes or unrelated AWS charges.",
+      "output_tokens": "27.50",
+      "pricing_tier": "standard",
+      "routing_scope": "in-region_and_geo_cross_region",
+      "source": "https://www-cdn.anthropic.com/files/4zrzovbb/website/5678bc2f5978e5bcd4f1fe7c14b2c72284dcf9f8.pdf",
+      "source_location": "Claude Opus 4.6 — AWS Bedrock, page 4",
+      "unit": "one_million_tokens",
+      "verified_on": "2026-09-28"
+    }
+  },
+  "model_stop_reason": "end_turn",
+  "source_inventory": {
+    "after": {
+      "diagnostics": [],
+      "file_count": 1,
+      "files": [
+        {
+          "file_kind": "source",
+          "ingest_status": "inventoried",
+          "issue": null,
+          "language": "Python",
+          "link_target": null,
+          "path": "sample.py",
+          "sha256": "e751ba122e2aab47fa35205765d02a103103293ff430d430137bf8be10f61a84",
+          "size": 56
+        }
+      ],
+      "root_hash": "bc1579a8c1832982259a80c3e9c868c6ab383678364d767fdcbe3ce1891e8b7b",
+      "total_size": 56,
+      "version": "after"
+    },
+    "before": {
+      "diagnostics": [],
+      "file_count": 1,
+      "files": [
+        {
+          "file_kind": "source",
+          "ingest_status": "inventoried",
+          "issue": null,
+          "language": "Python",
+          "link_target": null,
+          "path": "sample.py",
+          "sha256": "5a6c782b095e01f460541abf5c2cd8909ae2f8e9174acf8a0367a72777d22fa8",
+          "size": 56
+        }
+      ],
+      "root_hash": "7a5cda86b8bd03c85689e68c2b61b848163189f42c53444085c49b27617bb4af",
+      "total_size": 56,
+      "version": "before"
+    }
+  },
+  "source_preparation": {
+    "manifest_sha256": "367379c01f27f43d5a4dc52dd7cfe19795cf329e6512cb34f7fff7a4ea9d2c03",
+    "mode": "directory",
+    "schema_version": 1
+  },
+  "stop_reason": "model_end_turn",
+  "usage": {
+    "cache_read_input_tokens": 0,
+    "cache_write_input_tokens": 0,
+    "estimated_cost_usd": "0.02640",
+    "input_tokens": 2800,
+    "model_invocations": 2,
+    "output_tokens": 400,
+    "retrieved_source_bytes": 199,
+    "tool_executions": 4,
+    "tool_requests": 4
+  }
+}

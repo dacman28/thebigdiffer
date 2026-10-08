@@ -1,0 +1,75 @@
+[
+  {
+    "output": {
+      "message": {
+        "content": [
+          {
+            "toolUse": {
+              "input": {
+                "end_line": 4,
+                "path": "sample.py",
+                "start_line": 1,
+                "version": "before"
+              },
+              "name": "read_source",
+              "toolUseId": "read-1"
+            }
+          },
+          {
+            "toolUse": {
+              "input": {
+                "query": "run",
+                "version": "after"
+              },
+              "name": "search_source",
+              "toolUseId": "search-1"
+            }
+          },
+          {
+            "toolUse": {
+              "input": {
+                "identifier": "TOKEN",
+                "version": "before"
+              },
+              "name": "find_definition",
+              "toolUseId": "definition-1"
+            }
+          },
+          {
+            "toolUse": {
+              "input": {
+                "identifier": "TOKEN",
+                "version": "after"
+              },
+              "name": "find_references",
+              "toolUseId": "references-1"
+            }
+          }
+        ],
+        "role": "assistant"
+      }
+    },
+    "stopReason": "tool_use",
+    "usage": {
+      "inputTokens": 1000,
+      "outputTokens": 100
+    }
+  },
+  {
+    "output": {
+      "message": {
+        "content": [
+          {
+            "text": "Source-grounded qualified report."
+          }
+        ],
+        "role": "assistant"
+      }
+    },
+    "stopReason": "end_turn",
+    "usage": {
+      "inputTokens": 1800,
+      "outputTokens": 300
+    }
+  }
+]

@@ -1,0 +1,165 @@
+[
+  {
+    "arguments": {
+      "end_line": 4,
+      "path": "sample.py",
+      "start_line": 1,
+      "version": "before"
+    },
+    "name": "read_source",
+    "result": {
+      "cumulative_retrieved_source_bytes": 56,
+      "ok": true,
+      "provenance": {
+        "end_line": 4,
+        "file_sha256": "5a6c782b095e01f460541abf5c2cd8909ae2f8e9174acf8a0367a72777d22fa8",
+        "path": "sample.py",
+        "start_line": 1,
+        "version": "before"
+      },
+      "retrieved_source_bytes": 56,
+      "source": "TOKEN = 'old'\n\ndef run(value):\n    return TOKEN + value\n",
+      "tool": "read_source"
+    }
+  },
+  {
+    "arguments": {
+      "query": "run",
+      "version": "after"
+    },
+    "name": "search_source",
+    "result": {
+      "cumulative_retrieved_source_bytes": 112,
+      "diagnostics": [],
+      "literal_search": true,
+      "match_limit": 20,
+      "matches": [
+        {
+          "end_line": 4,
+          "file_sha256": "e751ba122e2aab47fa35205765d02a103103293ff430d430137bf8be10f61a84",
+          "line": 3,
+          "path": "sample.py",
+          "source": "TOKEN = 'new'\n\ndef run(value):\n    return TOKEN + value\n",
+          "start_line": 1,
+          "version": "after"
+        }
+      ],
+      "matches_limited": false,
+      "ok": true,
+      "path": null,
+      "query": "run",
+      "retrieved_source_bytes": 56,
+      "tool": "search_source",
+      "version": "after"
+    }
+  },
+  {
+    "arguments": {
+      "identifier": "TOKEN",
+      "version": "before"
+    },
+    "name": "find_definition",
+    "result": {
+      "cumulative_retrieved_source_bytes": 126,
+      "definitions": [
+        {
+          "end_line": 1,
+          "file_sha256": "5a6c782b095e01f460541abf5c2cd8909ae2f8e9174acf8a0367a72777d22fa8",
+          "kind": "module_assignment",
+          "path": "sample.py",
+          "source": "TOKEN = 'old'\n",
+          "start_line": 1,
+          "version": "before"
+        }
+      ],
+      "diagnostics": [],
+      "error": null,
+      "identifier": "TOKEN",
+      "ok": true,
+      "oversized_definitions": [],
+      "path": null,
+      "resolution": "resolved",
+      "retrieved_source_bytes": 14,
+      "tool": "find_definition",
+      "version": "before"
+    }
+  },
+  {
+    "arguments": {
+      "identifier": "TOKEN",
+      "version": "after"
+    },
+    "name": "find_references",
+    "result": {
+      "ambiguous": false,
+      "analysis": "python_syntax",
+      "cumulative_retrieved_source_bytes": 199,
+      "definition_resolution": "resolved",
+      "definitions": [
+        {
+          "classification": "definition",
+          "classification_basis": "python_ast_binding",
+          "column": 0,
+          "end_line": 3,
+          "file_sha256": "e751ba122e2aab47fa35205765d02a103103293ff430d430137bf8be10f61a84",
+          "identifier": "TOKEN",
+          "line": 1,
+          "match_end_column": 5,
+          "match_end_line": 1,
+          "path": "sample.py",
+          "source": "TOKEN = 'new'\n\ndef run(value):\n",
+          "start_line": 1,
+          "version": "after"
+        }
+      ],
+      "diagnostics": [],
+      "error": null,
+      "identifier": "TOKEN",
+      "language_support": "Python syntax only",
+      "ok": true,
+      "path": null,
+      "references": [
+        {
+          "classification": "reference",
+          "classification_basis": "python_identifier_token",
+          "column": 11,
+          "end_line": 4,
+          "file_sha256": "e751ba122e2aab47fa35205765d02a103103293ff430d430137bf8be10f61a84",
+          "identifier": "TOKEN",
+          "line": 4,
+          "match_end_column": 16,
+          "match_end_line": 4,
+          "path": "sample.py",
+          "source": "\ndef run(value):\n    return TOKEN + value\n",
+          "start_line": 2,
+          "version": "after"
+        }
+      ],
+      "result_limit": 20,
+      "results_limited": false,
+      "retrieved_source_bytes": 73,
+      "returned_source_lines": 6,
+      "tool": "find_references",
+      "total_definitions": 1,
+      "total_occurrences": 2,
+      "total_references": 1,
+      "unsupported_path_count": 0,
+      "unsupported_paths": [],
+      "version": "after"
+    }
+  },
+  {
+    "arguments": {
+      "end_line": 1,
+      "path": "../escape",
+      "start_line": 1,
+      "version": "before"
+    },
+    "name": "read_source",
+    "result": {
+      "error": "unsafe relative path: '../escape'",
+      "ok": false,
+      "tool": "read_source"
+    }
+  }
+]

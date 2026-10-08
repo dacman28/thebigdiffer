@@ -1,0 +1,3 @@
+include ARCHITECTURE.md
+include DESIGN-PROVENANCE.md
+recursive-include tests *.py *.json *.txt *.md

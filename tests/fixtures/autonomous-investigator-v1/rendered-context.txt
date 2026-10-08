@@ -1,0 +1,12 @@
+<application_context supplied='true' provenance='explicitly supplied by the user' sha256='10a0668e70d74e2370619eea0f13a760df03b2bf9d866aca47460af3cde14945'>
+This is explicitly supplied factual context, not repository-source evidence. It does not establish installation, public exposure, attacker influence, authentication, authorization, routes, roles, or other deployment facts beyond its exact text.
+
+Repository type:
+Python package
+
+Application context:
+This repository implements a Python package.
+
+Deployment context:
+Unknown.
+</application_context>

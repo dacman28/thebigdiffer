@@ -1,0 +1,115 @@
+{
+  "configuration": {
+    "max_initial_evidence_bytes": 262144,
+    "max_lines_per_tool_response": 200,
+    "max_model_invocations": 12,
+    "max_model_output_tokens": 4096,
+    "max_retrieved_source_bytes": 131072,
+    "max_tool_requests": 30,
+    "model_id": "us.anthropic.claude-opus-4-6-v1",
+    "region_name": "us-east-1",
+    "search_context_lines": 2,
+    "search_max_matches": 20,
+    "spending_ceiling_usd": "2.00",
+    "temperature": 0.0
+  },
+  "configuration_sha256": "8e5dc8b996f052e51f2893af25178f47370df818c68090b4bf35ae3501ad4aab",
+  "files": {
+    "application-context-record.json": {
+      "bytes": 579,
+      "sha256": "8b916751f4146d94d70be2577407c669baf439c7094a5b3f9c1406c2394717e2"
+    },
+    "application-context.json": {
+      "bytes": 202,
+      "sha256": "939d79dc45b2d931a12b1e0dc45e8fb773040978cddf16ac2f9ec21ebd20c13f"
+    },
+    "budget-probe.json": {
+      "bytes": 35166,
+      "sha256": "5ea7c95f63e85dd66881d790bb53e8f8aca89d5bd533be61b070c9619f297bf9"
+    },
+    "expected-model-requests.json": {
+      "bytes": 23592,
+      "sha256": "b41ddee44443ad571cf0856b7592d81dc6ba5e4cc72318bdcdd1aab0dee27d76"
+    },
+    "expected-patch.json": {
+      "bytes": 2631,
+      "sha256": "8ed3a8ce7815f42931c12a656951cfc55954f44b458f5dd60fb07a577ab6a11c"
+    },
+    "expected-report.md": {
+      "bytes": 34,
+      "sha256": "3f6095c1a3abb697cef1f1ebefadcc0c581b32baf47cd4a65fdba64a545be2b6"
+    },
+    "expected-runtime.json": {
+      "bytes": 3128,
+      "sha256": "58019569d1b7ea839208afac34f255cdd115b7497e20893f34a0d87b4c45311a"
+    },
+    "expected-tool-results.json": {
+      "bytes": 4425,
+      "sha256": "5a1ba6ec90905a5da0f51caf59a65c8d828fd4b877ad7bd7963b20aa7950d83c"
+    },
+    "expected-transcript.json": {
+      "bytes": 43885,
+      "sha256": "f62a0ce7e4d220875485888af96ab7499cc56294d2793f78ffc63879e9e97269"
+    },
+    "patch.txt": {
+      "bytes": 1257,
+      "sha256": "8c3500d8fdbaff9da178d151f651bf0163a5452f6e0fdfb140d3d2e373f50567"
+    },
+    "primary-prompt.txt": {
+      "bytes": 1409,
+      "sha256": "f2973b032a0a76e1aed537e2975cc861941f40a7a95bf88d5d0435da3dd347ab"
+    },
+    "rendered-context.txt": {
+      "bytes": 554,
+      "sha256": "76a2f1858f0c84aef1da2762f376fa7640fc9174f8266fb2c777ada0f1dc1eaa"
+    },
+    "scripted-provider-responses.json": {
+      "bytes": 1621,
+      "sha256": "2dd6768958079f1f7bf90c8684079bf048698f53dd6423961d585fe58a59c09c"
+    },
+    "source/after/sample.py": {
+      "bytes": 56,
+      "sha256": "e751ba122e2aab47fa35205765d02a103103293ff430d430137bf8be10f61a84"
+    },
+    "source/before/sample.py": {
+      "bytes": 56,
+      "sha256": "5a6c782b095e01f460541abf5c2cd8909ae2f8e9174acf8a0367a72777d22fa8"
+    },
+    "tool-config.json": {
+      "bytes": 3919,
+      "sha256": "99037dd6203103abecdbaf423fa21f03c86651e24d226754aa313946a8f6bf92"
+    }
+  },
+  "fixture_generation_description": "Generated offline from the validated production primary-investigation scenario formerly compared directly with the frozen research benchmark. This fixture is a derivative compatibility contract, not new research evidence.",
+  "fixture_version": "autonomous-investigator-v1",
+  "frozen_research_tree_object": "3848f859d854ba529292848b6227b7f7eb4e1cb8",
+  "kind": "derivative_compatibility_contract",
+  "model_id": "us.anthropic.claude-opus-4-6-v1",
+  "pricing": {
+    "cache_read_tokens": "0.55",
+    "cache_write_1h_tokens": "11.00",
+    "cache_write_5m_tokens": "6.875",
+    "currency": "USD",
+    "effective_date": "2026-05-12",
+    "input_tokens": "5.50",
+    "model_id": "us.anthropic.claude-opus-4-6-v1",
+    "note": "Local estimates only. This ceiling is not an AWS billing limit and does not include taxes or unrelated AWS charges.",
+    "output_tokens": "27.50",
+    "pricing_tier": "standard",
+    "routing_scope": "in-region_and_geo_cross_region",
+    "source": "https://www-cdn.anthropic.com/files/4zrzovbb/website/5678bc2f5978e5bcd4f1fe7c14b2c72284dcf9f8.pdf",
+    "source_location": "Claude Opus 4.6 — AWS Bedrock, page 4",
+    "unit": "one_million_tokens",
+    "verified_on": "2026-09-28"
+  },
+  "pricing_sha256": "548678478cfc9aac9eddc2360cb79f424153787dc33ba9ac0adbd0e8d60d1360",
+  "primary_prompt_sha256": "f2973b032a0a76e1aed537e2975cc861941f40a7a95bf88d5d0435da3dd347ab",
+  "production_git_input_milestone_commit": "ef31421da220fdcc864efbc52657b3dff2e20f3b",
+  "production_git_input_milestone_tag": "v2-git-input-ready",
+  "research_repository_final_source_commit": "ef31421da220fdcc864efbc52657b3dff2e20f3b",
+  "schema_version": 1,
+  "temperature": 0.0,
+  "tool_definitions_sha256": "e9a23622ce8762f55242eedf28b87ef37719ddc432224e6419c996971312685c",
+  "validated_research_architecture_commit": "1bd47dd6243aaf58d294a76258236506405defa0",
+  "validated_research_architecture_tag": "v2-autonomous-investigator-opus-4.6"
+}

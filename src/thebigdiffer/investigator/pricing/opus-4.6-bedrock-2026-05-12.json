@@ -1,0 +1,17 @@
+{
+  "cache_read_tokens": "0.55",
+  "cache_write_1h_tokens": "11.00",
+  "cache_write_5m_tokens": "6.875",
+  "currency": "USD",
+  "effective_date": "2026-05-12",
+  "input_tokens": "5.50",
+  "model_id": "us.anthropic.claude-opus-4-6-v1",
+  "note": "Local estimates only. This ceiling is not an AWS billing limit and does not include taxes or unrelated AWS charges.",
+  "output_tokens": "27.50",
+  "pricing_tier": "standard",
+  "routing_scope": "in-region_and_geo_cross_region",
+  "source": "https://www-cdn.anthropic.com/files/4zrzovbb/website/5678bc2f5978e5bcd4f1fe7c14b2c72284dcf9f8.pdf",
+  "source_location": "Claude Opus 4.6 — AWS Bedrock, page 4",
+  "unit": "one_million_tokens",
+  "verified_on": "2026-09-28"
+}
