@@ -496,3 +496,69 @@ def test_git_workspace_os_error_is_reported_without_traceback(
     stderr = capsys.readouterr().err
     assert "Git preparation failed: Cannot create temporary snapshot workspace" in stderr
     assert "Traceback" not in stderr
+
+
+@pytest.mark.parametrize(
+    "provider_stop,expected_stop,expected_status",
+    [
+        ("end_turn", "model_end_turn", 0),
+        ("max_tokens", "model_max_tokens", 2),
+        ("transport_error", "model_transport_error_no_retry", 2),
+    ],
+)
+def test_cli_completion_messages_point_to_persisted_status_and_artifacts(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+    provider_stop: str,
+    expected_stop: str,
+    expected_status: int,
+) -> None:
+    before, after, context, output = _inputs(tmp_path)
+    calls = 0
+
+    class Provider:
+        def converse(self, **request: Any) -> dict[str, Any]:
+            nonlocal calls
+            calls += 1
+            if provider_stop == "transport_error":
+                raise RuntimeError("Synthetic provider failure")
+            return _CliInvestigatorProvider(stop_reason=provider_stop).converse(**request)
+
+    monkeypatch.setattr("thebigdiffer.cli.BedrockClaudeProvider", lambda **kwargs: Provider())
+    status = main(
+        [
+            "investigate",
+            "--before",
+            str(before),
+            "--after",
+            str(after),
+            "--context",
+            str(context),
+            "--output",
+            str(output),
+        ]
+    )
+    captured = capsys.readouterr()
+    assert status == expected_status
+    assert calls == 1
+    messages = captured.out if status == 0 else captured.err
+    assert (captured.err if status == 0 else captured.out) == ""
+    assert f"Report: {output / 'research-report.md'}" in messages
+    assert f"Status: {expected_stop}" in messages
+    assert f"Metrics: {output / 'metrics.json'}" in messages
+    if status == 0:
+        assert messages.startswith("Investigation complete.\n")
+    else:
+        assert "investigation incomplete" in messages
+        assert f"Transcript/error detail: {output / 'transcript.json'}" in messages
+    metrics = json.loads(output.joinpath("metrics.json").read_text(encoding="utf-8"))
+    transcript = json.loads(output.joinpath("transcript.json").read_text(encoding="utf-8"))
+    assert metrics["stop_reason"] == transcript["final"]["stop_reason"] == expected_stop
+    if provider_stop == "transport_error":
+        errors = [
+            event for event in transcript["events"] if event["type"] == "model_transport_error"
+        ]
+        assert len(errors) == 1
+        assert errors[0]["error"] == "Synthetic provider failure"
+        assert errors[0]["retry_attempted"] is False

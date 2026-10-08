@@ -128,13 +128,21 @@ def _investigate(
     except (IngestionError, OSError, ValueError) as error:
         print(f"thebigdiffer: {error}", file=sys.stderr)
         return 2
-    if report.stop_reason != "model_end_turn":
+    complete = report.stop_reason == "model_end_turn"
+    stream = sys.stdout if complete else sys.stderr
+    if complete:
+        print("Investigation complete.", file=stream)
+    else:
         print(
             f"thebigdiffer: investigation incomplete: {report.stop_reason}",
-            file=sys.stderr,
+            file=stream,
         )
-        return 2
-    return 0
+    print(f"Report: {output / 'research-report.md'}", file=stream)
+    print(f"Status: {report.stop_reason}", file=stream)
+    print(f"Metrics: {output / 'metrics.json'}", file=stream)
+    if not complete:
+        print(f"Transcript/error detail: {output / 'transcript.json'}", file=stream)
+    return 0 if complete else 2
 
 
 def _validate_output(output: Path) -> None:
