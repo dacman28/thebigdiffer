@@ -3,9 +3,12 @@
 from __future__ import annotations
 
 import argparse
+import stat
 import sys
 from collections.abc import Sequence
 from pathlib import Path
+
+from botocore.exceptions import BotoCoreError, ClientError  # type: ignore[import-untyped]
 
 from thebigdiffer.context import ApplicationContext
 from thebigdiffer.ingest import IngestionError
@@ -46,6 +49,12 @@ def main(argv: Sequence[str] | None = None) -> int:
     arguments = parser.parse_args(argv)
     output: Path = arguments.output
     mode = _source_mode(parser, arguments)
+    try:
+        context = ApplicationContext.load(arguments.context)
+        _validate_output(output)
+    except (OSError, ValueError) as error:
+        print(f"thebigdiffer: {error}", file=sys.stderr)
+        return 2
 
     if mode == "directory":
         before: Path = arguments.before
@@ -55,7 +64,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         return _investigate(
             before=before,
             after=after,
-            context_path=arguments.context,
+            context=context,
             output=output,
             source_preparation=SourcePreparation.directory(),
         )
@@ -75,11 +84,11 @@ def main(argv: Sequence[str] | None = None) -> int:
             return _investigate(
                 before=prepared.before_directory,
                 after=prepared.after_directory,
-                context_path=arguments.context,
+                context=context,
                 output=output,
                 source_preparation=prepared.preparation,
             )
-    except GitPreparationError as error:
+    except (GitPreparationError, OSError) as error:
         print(f"thebigdiffer: Git preparation failed: {error}", file=sys.stderr)
         return 2
 
@@ -88,15 +97,25 @@ def _investigate(
     *,
     before: Path,
     after: Path,
-    context_path: Path,
+    context: ApplicationContext,
     output: Path,
     source_preparation: SourcePreparation,
 ) -> int:
 
     try:
         config = InvestigationConfig()
-        context = ApplicationContext.load(context_path)
-        provider = BedrockClaudeProvider(region_name=config.region_name)
+        _validate_source_directory(before, "--before")
+        _validate_source_directory(after, "--after")
+        try:
+            provider = BedrockClaudeProvider(region_name=config.region_name)
+        except (BotoCoreError, ClientError) as error:
+            print(
+                f"thebigdiffer: AWS provider setup failed: {error}. "
+                "Check your AWS SDK credentials/profile configuration and "
+                f"Bedrock access in {config.region_name}.",
+                file=sys.stderr,
+            )
+            return 2
         report = ClaudeInvestigator(
             before_root=before,
             after_root=after,
@@ -116,6 +135,27 @@ def _investigate(
         )
         return 2
     return 0
+
+
+def _validate_output(output: Path) -> None:
+    """Reject obvious output mistakes before preparing sources or AWS state."""
+    try:
+        output.lstat()
+    except FileNotFoundError:
+        return
+    raise ValueError(f"--output already exists: {output}; choose a new directory")
+
+
+def _validate_source_directory(root: Path, label: str) -> None:
+    """Preflight the root only; safe ingest still performs all authoritative checks."""
+    try:
+        metadata = root.expanduser().lstat()
+    except OSError as error:
+        raise IngestionError(f"{label}: cannot inspect source directory {root}: {error}") from error
+    if stat.S_ISLNK(metadata.st_mode):
+        raise IngestionError(f"{label}: input root must not be a symlink: {root}")
+    if not stat.S_ISDIR(metadata.st_mode):
+        raise IngestionError(f"{label}: input root must be a directory: {root}")
 
 
 def _source_mode(parser: argparse.ArgumentParser, arguments: argparse.Namespace) -> str:

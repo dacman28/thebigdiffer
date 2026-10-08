@@ -2,7 +2,9 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import subprocess
+import sys
 from pathlib import Path
 from typing import Any
 
@@ -319,3 +321,178 @@ def test_investigate_cli_reports_incomplete_provider_result(
     assert status == 2
     assert "investigation incomplete: model_max_tokens" in capsys.readouterr().err
     assert output.joinpath("transcript.json").is_file()
+
+
+@pytest.mark.parametrize(
+    "configuration,error",
+    [
+        ({"AWS_PROFILE": "nonexistent-audit-profile"}, "nonexistent-audit-profile"),
+        ({"AWS_ACCESS_KEY_ID": "fictitious-test-key"}, "AWS_SECRET_ACCESS_KEY"),
+    ],
+)
+def test_cli_sdk_startup_errors_are_actionable_without_tracebacks(
+    tmp_path: Path,
+    configuration: dict[str, str],
+    error: str,
+) -> None:
+    before, after, context, output = _inputs(tmp_path)
+    environment = {
+        "PATH": os.environ["PATH"],
+        "PYTHONPATH": str(Path(__file__).resolve().parents[1] / "src"),
+        "AWS_CONFIG_FILE": str(tmp_path / "absent-config"),
+        "AWS_SHARED_CREDENTIALS_FILE": str(tmp_path / "absent-credentials"),
+        "BOTO_CONFIG": str(tmp_path / "absent-boto-config"),
+        "AWS_EC2_METADATA_DISABLED": "true",
+        **configuration,
+    }
+    completed = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "thebigdiffer",
+            "investigate",
+            "--before",
+            str(before),
+            "--after",
+            str(after),
+            "--context",
+            str(context),
+            "--output",
+            str(output),
+        ],
+        capture_output=True,
+        text=True,
+        env=environment,
+        timeout=30,
+    )
+    assert completed.returncode == 2
+    assert "AWS provider setup failed" in completed.stderr
+    assert "AWS SDK credentials/profile configuration" in completed.stderr
+    assert error in completed.stderr
+    assert "Traceback" not in completed.stderr
+    assert not output.exists()
+
+
+@pytest.mark.parametrize(
+    "problem,message",
+    [
+        ("missing-source", "--before"),
+        ("file-source", "directory"),
+        ("symlink-source", "symlink"),
+        ("existing-output", "already exists"),
+        ("dangling-output", "already exists"),
+        ("file-output-parent", "Not a directory"),
+        ("invalid-context", "application context"),
+    ],
+)
+def test_local_errors_are_reported_before_provider_construction(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+    problem: str,
+    message: str,
+) -> None:
+    before, after, context, output = _inputs(tmp_path)
+    if problem == "missing-source":
+        before = tmp_path / "missing"
+    elif problem == "file-source":
+        before = before / "app.py"
+    elif problem == "symlink-source":
+        link = tmp_path / "source-link"
+        link.symlink_to(before, target_is_directory=True)
+        before = link
+    elif problem == "existing-output":
+        output.mkdir()
+    elif problem == "dangling-output":
+        output.symlink_to(tmp_path / "absent-output-target")
+    elif problem == "file-output-parent":
+        parent = tmp_path / "file"
+        parent.write_text("file", encoding="utf-8")
+        output = parent / "output"
+    else:
+        context.write_text("{}", encoding="utf-8")
+
+    def unexpected_provider(**kwargs: object) -> None:
+        pytest.fail("invalid local inputs must not construct an AWS provider")
+
+    monkeypatch.setattr("thebigdiffer.cli.BedrockClaudeProvider", unexpected_provider)
+    status = main(
+        [
+            "investigate",
+            "--before",
+            str(before),
+            "--after",
+            str(after),
+            "--context",
+            str(context),
+            "--output",
+            str(output),
+        ]
+    )
+    assert status == 2
+    stderr = capsys.readouterr().err
+    assert message in stderr
+    assert "Traceback" not in stderr
+
+
+def test_invalid_context_is_reported_before_git_preparation(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    before, _, context, output = _inputs(tmp_path)
+    context.write_text("{}", encoding="utf-8")
+
+    def unexpected_preparation(*args: object, **kwargs: object) -> None:
+        pytest.fail("invalid context must not prepare snapshots")
+
+    monkeypatch.setattr("thebigdiffer.cli.GitRepositoryPreparer", unexpected_preparation)
+    status = main(
+        [
+            "investigate",
+            "--repo",
+            str(before),
+            "--before-ref",
+            "HEAD^",
+            "--after-ref",
+            "HEAD",
+            "--context",
+            str(context),
+            "--output",
+            str(output),
+        ]
+    )
+    assert status == 2
+    assert "application context" in capsys.readouterr().err
+
+
+def test_git_workspace_os_error_is_reported_without_traceback(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    before, _, context, output = _inputs(tmp_path)
+
+    def fail_preparation(*args: object, **kwargs: object) -> None:
+        raise OSError("Cannot create temporary snapshot workspace")
+
+    monkeypatch.setattr("thebigdiffer.cli.GitRepositoryPreparer", fail_preparation)
+    status = main(
+        [
+            "investigate",
+            "--repo",
+            str(before),
+            "--before-ref",
+            "HEAD^",
+            "--after-ref",
+            "HEAD",
+            "--context",
+            str(context),
+            "--output",
+            str(output),
+        ]
+    )
+    assert status == 2
+    stderr = capsys.readouterr().err
+    assert "Git preparation failed: Cannot create temporary snapshot workspace" in stderr
+    assert "Traceback" not in stderr
