@@ -4,14 +4,25 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "thebigdiffer"
-version = "0.2.0"
+version = "2.0.0"
 description = "Autonomous, source-grounded software patch security investigation"
+readme = "README.md"
 requires-python = ">=3.11"
 authors = [{ name = "TheBigDiffer contributors" }]
+keywords = ["security", "patch-analysis", "code-review", "aws-bedrock"]
+classifiers = [
+  "Intended Audience :: Developers",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Topic :: Security",
+]
 dependencies = [
   "boto3>=1.43,<2",
   "botocore[crt]>=1.43,<1.44",
 ]
+
+[project.urls]
+Repository = "https://github.com/dacman28/TheBigDiffer"
 
 [project.optional-dependencies]
 dev = ["mypy>=1.11", "pytest>=8", "ruff>=0.7"]
