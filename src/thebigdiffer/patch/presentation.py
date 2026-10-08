@@ -50,8 +50,6 @@ def build_patch_presentation(store: SourceRepository, max_bytes: int) -> PatchPr
     for path in changed:
         old_record = before.files.get(path)
         new_record = after.files.get(path)
-        old_text = _text(store, "before", path) if old_record is not None else ""
-        new_text = _text(store, "after", path) if new_record is not None else ""
         text_eligible = all(
             item is None or item.file_kind in {"source", "text"}
             for item in (old_record, new_record)
@@ -69,6 +67,8 @@ def build_patch_presentation(store: SourceRepository, max_bytes: int) -> PatchPr
             sections.append(section)
             used += len(section.encode("utf-8"))
             continue
+        old_text = _text(store, "before", path) if old_record is not None else ""
+        new_text = _text(store, "after", path) if new_record is not None else ""
         patch = exact_unified_diff(old_text, new_text, path, old_record is None, new_record is None)
         before_ranges, after_ranges = _hunk_ranges(patch)
         patch_sha = _sha256(patch)
