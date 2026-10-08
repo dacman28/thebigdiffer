@@ -1,3 +1,4 @@
 include ARCHITECTURE.md
 include DESIGN-PROVENANCE.md
+recursive-include examples *.json
 recursive-include tests *.py *.json *.txt *.md

@@ -102,6 +102,12 @@ metadata. Symlink targets are recreated byte-for-byte but never followed. Gitlin
 recorded and skipped; submodules are never initialized. Unknown modes are recorded as unsupported,
 while malformed types, paths, or object reads fail closed.
 
+Path identity validation includes every directory prefix as well as each leaf path, using Unicode
+NFC normalization followed by case-folding. Distinct raw prefixes with the same portable identity
+are rejected, including file/directory aliases. Both BEFORE and AFTER path sets are validated
+before the temporary workspace is created or either tree is materialized; shared identical
+directory prefixes remain valid. Source paths are never renamed or merged.
+
 Git commands run with hooks disabled, optional locks disabled, replacement objects disabled,
 lazy remote object fetching disabled, terminal prompting disabled, and system/global Git config
 disabled. No checkout/archive attributes, clean/smudge filters, LFS downloads, fetches, or remote
@@ -145,6 +151,17 @@ unsafe arguments, cumulative source-byte excess, and unsupported files fail expl
 The local cost ceiling is an admission and termination safeguard, not an AWS billing guarantee.
 Provider errors are recorded and stop cleanly; the runtime does not silently retry or switch
 models.
+
+Patch preparation classifies changed records before reading text. If either existing side is
+non-text, the existing deterministic `non_text_change` record carries the path and BEFORE/AFTER
+hashes. Binary bytes and symlink targets are not rendered as textual source. Text-only patch
+presentation and source-tool validation are unchanged.
+
+The CLI checks context, output existence and source-root shape before AWS client construction.
+Expected SDK setup errors are reported at that boundary. After investigation, CLI status messages
+point to the persisted report, metrics and (for incomplete runs) transcript without interpreting
+the model's security conclusions or changing those artifacts. See README for platform,
+credential, output-status and confidentiality requirements.
 
 ## Deliberate exclusions
 
